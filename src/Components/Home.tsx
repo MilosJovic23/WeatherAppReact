@@ -10,6 +10,15 @@ const Home = ():JSX.Element=>
     const cities:string[]=["Beograd","Subotica","Novi Sad","Zagreb","Sarajevo"]
     const isValidCities= (name:string)=> cities.includes(name)
 
+    const successCallback = (location:GeolocationPosition) => {
+        console.log(location.coords.latitude,location.coords.longitude);
+    };
+    const errorCallback = (error:object) => {
+        console.log(error);
+    };
+
+    navigator.geolocation.getCurrentPosition(successCallback,errorCallback);
+
     const formSubmitted=(data:object)=>console.log(data)
 
     return(
@@ -17,7 +26,7 @@ const Home = ():JSX.Element=>
            <form onSubmit={handleSubmit(formSubmitted)}>
                <input placeholder="enter city" type="text"
                       {...register("cityName", { validate:
-                              (isValidCities) })}/>
+                              ( isValidCities ) })}/>
 
            </form>
 
