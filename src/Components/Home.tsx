@@ -1,17 +1,29 @@
 
-import React from "react";
+import React, {useState} from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import * as https from "https";
 
 
 const Home = ():JSX.Element=>
 {
     const { register,handleSubmit,formState:{errors}}=useForm()
+    const [userLocation,setUserLocation]=useState()
+    const cities:string[]=["Beograd","Subotica","Novi Sad","Zagreb","Sarajevo"];
 
-    const cities:string[]=["Beograd","Subotica","Novi Sad","Zagreb","Sarajevo"]
-    const isValidCities= (name:string)=> cities.includes(name)
+    console.log(userLocation)
+    const isValidCities= (name:string)=> cities.includes(name);
 
     const successCallback = (location:GeolocationPosition) => {
-        console.log(location.coords.latitude,location.coords.longitude);
+        const latitude:number=location.coords.latitude;
+        const longitude:number=location.coords.longitude;
+
+        console.log(latitude,longitude);
+
+        axios.get(`https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=65fef450e0446734068339pen8f2d65`)
+            .then(response=>setUserLocation(response.data.address.city))
+            .catch(error=>console.log(error)
+                )
     };
     const errorCallback = (error:object) => {
         console.log(error);
@@ -19,16 +31,21 @@ const Home = ():JSX.Element=>
 
     navigator.geolocation.getCurrentPosition(successCallback,errorCallback);
 
+
+
     const formSubmitted=(data:object)=>console.log(data)
 
     return(
 
-           <form onSubmit={handleSubmit(formSubmitted)}>
-               <input placeholder="enter city" type="text"
-                      {...register("cityName", { validate:
-                              ( isValidCities ) })}/>
+        <form onSubmit={handleSubmit(formSubmitted)}>
+            <input placeholder="enter city" type="text"
+                   {...register("cityName", {
+                       validate:
+                           (isValidCities)
+                   })}/>
+            <div><p>Your current location is:{userLocation}</p></div>
+        </form>
 
-           </form>
 
     )
 
