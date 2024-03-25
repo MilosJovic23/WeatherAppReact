@@ -1,8 +1,7 @@
 
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import * as https from "https";
 
 
 const Home = ():JSX.Element=>
@@ -12,7 +11,7 @@ const Home = ():JSX.Element=>
     const cities:string[]=["Beograd","Subotica","Novi Sad","Zagreb","Sarajevo"];
 
     console.log(userLocation)
-    const isValidCities= (name:string)=> cities.includes(name);
+    const isValidCity= (name:string)=> cities.includes(name);
 
     const successCallback = (location:GeolocationPosition) => {
         const latitude:number=location.coords.latitude;
@@ -28,8 +27,12 @@ const Home = ():JSX.Element=>
     const errorCallback = (error:object) => {
         console.log(error);
     };
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(successCallback,errorCallback);
+    }   else{
+        console.log("Geolocation is not supported")
+    }
 
-    navigator.geolocation.getCurrentPosition(successCallback,errorCallback);
 
 
 
@@ -41,7 +44,7 @@ const Home = ():JSX.Element=>
             <input placeholder="enter city" type="text"
                    {...register("cityName", {
                        validate:
-                           (isValidCities)
+                           (isValidCity)
                    })}/>
             <div><p>Your current location is:{userLocation}</p></div>
         </form>
